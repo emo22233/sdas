@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IMEI Tracker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+            min-height: 100vh;
+        }
+        .tracker-container {
+            background: #fff;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+            border-radius: 16px;
+            max-width: 430px;
+            margin: 40px auto;
+            padding: 32px 24px 24px 24px;
+            text-align: center;
+        }
+        h1 {
+            color: #1976d2;
+            margin-bottom: 16px;
+            font-size: 2.2rem;
+            letter-spacing: 1px;
+            font-weight: 700;
+        }
+        label {
+            font-weight: 600;
+            color: #333;
+            display: block;
+            margin-bottom: 8px;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0 16px 0;
+            border: 1px solid #bdbdbd;
+            border-radius: 8px;
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+        input[type="submit"] {
+            width: 100%;
+            background: #1976d2;
+            color: #fff;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        input[type="submit"]:hover {
+            background: #1565c0;
+        }
+        .device-details {
+            display: none;
+            background: #e3f2fd;
+            border: 1px solid #90caf9;
+            border-radius: 10px;
+            margin-top: 24px;
+            padding: 18px;
+            text-align: left;
+        }
+        .device-details h2 {
+            margin-top: 0;
+            color: #1565c0;
+        }
+        .satellite-tracking {
+            margin-top: 20px;
+            background: #fffde7;
+            border: 1px solid #ffe082;
+            border-radius: 8px;
+            padding: 12px 10px 10px 10px;
+            box-shadow: 0 2px 8px rgba(255,193,7,0.07);
+        }
+        .satellite-tracking h3 {
+            margin: 0 0 8px 0;
+            color: #fbc02d;
+            font-size: 1.1rem;
+        }
+        .location-history {
+            margin-top: 24px;
+            background: #e8f5e9;
+            border: 1px solid #a5d6a7;
+            border-radius: 8px;
+            padding: 14px 12px 12px 12px;
+        }
+        .location-history h3 {
+            margin: 0 0 8px 0;
+            color: #388e3c;
+            font-size: 1.08rem;
+        }
+        .location-history ul {
+            padding-left: 18px;
+            margin: 0 0 10px 0;
+            font-size: 0.98rem;
+        }
+        .location-history ul li {
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="tracker-container">
+        <h1>IMEI Tracker</h1>
+        <form id="imeiForm">
+            <label for="imei">Enter IMEI Number:</label>
+            <input type="text" id="imei" name="imei" required>
+            <label for="mobile">Enter Mobile Number:</label>
+            <input type="text" id="mobile" name="mobile" pattern="[0-9]{10}" maxlength="10" placeholder="10-digit number" required>
+            <input type="submit" value="Track IMEI / Mobile">
+        </form>
+        <div class="device-details" id="deviceDetails">
+            <h2>Device Details</h2>
+            <p><strong>IMEI:</strong> <span id="showImei"></span></p>
+            <p><strong>Mobile Number:</strong> <span id="showMobile"></span></p>
+            <p><strong>Brand:</strong> <span id="brand">Samsung</span></p>
+            <p><strong>Model:</strong> <span id="model">Galaxy S21 Ultra</span></p>
+            <p><strong>Status:</strong> <span id="status">Active</span></p>
+            <p><strong>Last Seen:</strong> <span id="lastSeen">2025-04-24</span></p>
+            <p><strong>Location:</strong> <span id="location">Mumbai, India</span></p>
+            <p><strong>SIM Number:</strong> <span id="sim">8991XXXXXXXXXXX</span></p>
+            <p><strong>Carrier:</strong> <span id="carrier">Jio</span></p>
+            <p><strong>Device Type:</strong> <span id="deviceType">Smartphone</span></p>
+            <p><strong>Operating System:</strong> <span id="os">Android 13</span></p>
+            <p><strong>Battery:</strong> <span id="battery">82%</span></p>
+            <p><strong>Coordinates:</strong> <span id="coords">19.0760° N, 72.8777° E</span></p>
+            <div class="satellite-tracking">
+                <h3>Satellite Tracking</h3>
+                <img src="https://maps.googleapis.com/maps/api/staticmap?center=19.0760,72.8777&zoom=12&size=350x200&maptype=satellite&key=YOUR_API_KEY" alt="Satellite Map" style="width:100%;border-radius:8px;margin-bottom:8px;" />
+            </div>
+            <div class="location-history">
+                <h3>Location History</h3>
+                <ul id="locationList">
+                    <li><strong>2025-04-24 16:10</strong> — Mumbai, India (19.0760° N, 72.8777° E)</li>
+                    <li><strong>2025-04-23 12:30</strong> — Pune, India (18.5204° N, 73.8567° E)</li>
+                    <li><strong>2025-04-22 09:00</strong> — Nashik, India (19.9975° N, 73.7898° E)</li>
+                </ul>
+                <div id="googleMap" style="width:100%;height:260px;border-radius:8px;margin-top:10px;"></div>
+                <p style="font-size:0.93em;color:#555;">(Location history is for demonstration purposes only)</p>
+            </div>
+        </div>
+    </div>
+    <script>
+        const imeiForm = document.getElementById('imeiForm');
+        const deviceDetails = document.getElementById('deviceDetails');
+        const showImei = document.getElementById('showImei');
+        imeiForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+            const imei = document.getElementById('imei').value;
+            const mobile = document.getElementById('mobile').value;
+            showImei.textContent = imei;
+            document.getElementById('showMobile').textContent = mobile;
+            // Demo/mock details for now
+            document.getElementById('brand').textContent = 'Samsung';
+            document.getElementById('model').textContent = 'Galaxy S21 Ultra';
+            document.getElementById('status').textContent = 'Active';
+            document.getElementById('lastSeen').textContent = '2025-04-24';
+            document.getElementById('location').textContent = 'Mumbai, India';
+            document.getElementById('sim').textContent = '8991XXXXXXXXXXX';
+            document.getElementById('carrier').textContent = 'Jio';
+            document.getElementById('deviceType').textContent = 'Smartphone';
+            document.getElementById('os').textContent = 'Android 13';
+            document.getElementById('battery').textContent = '82%';
+            document.getElementById('coords').textContent = '19.0760° N, 72.8777° E';
+            deviceDetails.style.display = 'block';
+            // Google Map tracking
+            initMap();
+        });
+        // Google Maps locations (mock history)
+        const locations = [
+            {lat: 19.0760, lng: 72.8777, label: 'Mumbai, India'},
+            {lat: 18.5204, lng: 73.8567, label: 'Pune, India'},
+            {lat: 19.9975, lng: 73.7898, label: 'Nashik, India'}
+        ];
+        function initMap() {
+            const map = new google.maps.Map(document.getElementById('googleMap'), {
+                zoom: 7,
+                center: locations[0],
+                mapTypeId: 'roadmap'
+            });
+            locations.forEach(function(loc, idx) {
+                new google.maps.Marker({
+                    position: {lat: loc.lat, lng: loc.lng},
+                    map: map,
+                    label: String(idx + 1),
+                    title: loc.label
+                });
+            });
+        }
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY"></script>
+</body>
+</html>
